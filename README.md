@@ -16,4 +16,5 @@
 + Missile Launcher    
 + Shotgun     
 
-5 - Map generation (IMPORANTE)
+5 - Map generation (IMPORANTE)     
+- Define map's caracteristic for random generation
