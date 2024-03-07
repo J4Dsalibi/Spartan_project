@@ -14,4 +14,6 @@
 + Sniper    
 + SMG    
 + Missile Launcher    
-+ Shotgun    
++ Shotgun     
+
+5 - Map generation (IMPORANTE)
