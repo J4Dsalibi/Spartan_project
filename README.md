@@ -30,38 +30,66 @@ using UnityEngine;
 
 public class player_mvt : MonoBehaviour
 {
-    // Basic Mvt
     [SerializeField] private Rigidbody _rb;
-    [SerializeField] private float speed = 5;
-    [SerializeField] private float turnSpeed = 360;
+    [SerializeField] private float _speed = 5;
+    [SerializeField] private float dashDistance = 5f;
+    private bool DashWasPressed;
     private Vector3 _input;
     
-    // Start is called before the first frame update
-    void Start()
+
+    void Update()
     {
-        rigidbodyComponent = GetComponent<Rigidbody>();
-    }
-    
-    void FixedUpdate{
-        Move();
-    }
-    
-    void GatherInput
-    {
-        _input = new Vector3(Input.GetAxisRaw("Horizontal"),0,Input.GetAxisRaw("Vertical"));
-    }
-    
-    void Look(){
-        if (_input != Vector3.zero){
-            var relative = (transform.position + _input) - transform.position;
-            var rot = Quaternion.LookRotation(relative,Vector3.up);
-        
-            transform.rotation = Quaternion.RotateTowards(transform.rotation,rot,turnSpeed * Time.deltaTime);
+        GatherInput();
+        Look();
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            DashWasPressed = true;
         }
     }
-    void Move()
+
+    private void FixedUpdate()
     {
-        rb.MovePosition(transform.position + transform.forward * _speed * Time.deltaTime);
+        Move();
+        if (DashWasPressed)
+        {
+            Dash();
+            DashWasPressed = false;
+        }
     }
-    
+
+    private void GatherInput()
+    {
+        _input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
+    }
+
+    private void Look()
+    {
+        if (_input != Vector3.zero)
+        {
+            var matrix = Matrix4x4.Rotate(Quaternion.Euler(0, 45, 0));
+            var skewedInput = matrix.MultiplyPoint3x4(_input);
+            var relative = (transform.position + skewedInput) - transform.position;
+            var rot = Quaternion.LookRotation(relative, Vector3.up);
+
+            transform.rotation = rot; // Set rotation instantly without any interpolation
+        }
+    }
+    private void Move()
+    {
+        _rb.MovePosition(transform.position + (transform.forward * _input.magnitude) * _speed * Time.deltaTime);
+    }
+
+    private void Dash()
+    {
+        Vector3 dashDestination = transform.position + transform.forward * dashDistance;
+
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, transform.forward, out hit, dashDistance))
+        {
+            // Teleport just in front of the obstacle
+            dashDestination = hit.point - transform.forward * 0.5f; // Adjust distance from the obstacle
+        }
+
+        transform.position = dashDestination;
+    }
 }
