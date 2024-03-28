@@ -31,7 +31,7 @@ using UnityEngine;
 public class player_mvt : MonoBehaviour
 {
     // Basic Mvt
-    [SerializeField] private RigidBody _rb;
+    [SerializeField] private Rigidbody _rb;
     [SerializeField] private float speed = 5;
     [SerializeField] private float turnSpeed = 360;
     private Vector3 _input;
@@ -53,7 +53,7 @@ public class player_mvt : MonoBehaviour
     
     void Look(){
         if (_input != Vector3.zero){
-            var relative = (transfrom.position + _input) - transform.position;
+            var relative = (transform.position + _input) - transform.position;
             var rot = Quaternion.LookRotation(relative,Vector3.up);
         
             transform.rotation = Quaternion.RotateTowards(transform.rotation,rot,turnSpeed * Time.deltaTime);
