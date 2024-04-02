@@ -35,7 +35,8 @@ public class player_mvt : MonoBehaviour
     [SerializeField] private float dashDistance = 5f;
     private bool DashWasPressed;
     private Vector3 _input;
-    
+    private bool isMoving = false;
+
 
     void Update()
     {
@@ -60,6 +61,7 @@ public class player_mvt : MonoBehaviour
     private void GatherInput()
     {
         _input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
+        isMoving = _input.magnitude > 0;
     }
 
     private void Look()
@@ -76,9 +78,27 @@ public class player_mvt : MonoBehaviour
     }
     private void Move()
     {
-        _rb.MovePosition(transform.position + (transform.forward * _input.magnitude) * _speed * Time.deltaTime);
+        if (isMoving)
+        {
+            // Vérifie si le personnage peut se déplacer dans la direction donnée
+            if (!CheckObstacle(transform.forward))
+            {
+                // Si pas d'obstacle, déplace le personnage
+                _rb.MovePosition(transform.position + transform.forward * _speed * Time.deltaTime);
+            }
+        }
     }
 
+    private bool CheckObstacle(Vector3 direction)
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, direction, out hit, 1f))
+        {
+            // S'il y a un obstacle devant le personnage, retourne vrai
+            return true;
+        }
+        return false;
+    }
     private void Dash()
     {
         Vector3 dashDestination = transform.position + transform.forward * dashDistance;
