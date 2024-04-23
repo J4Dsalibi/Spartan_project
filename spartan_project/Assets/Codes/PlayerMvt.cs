@@ -7,7 +7,10 @@ public class PlayerMvt : MonoBehaviour
     [SerializeField] private Rigidbody _rb;
     [SerializeField] private float _speed = 7f;
     [SerializeField] private float dashDistance = 5f;
+    [SerializeField] private float dashDuration = 0.2f;
     [SerializeField] private float dashCooldown = 2f;
+
+    [SerializeField] private TrailRenderer trailRenderer;
 
     private float dashCountdown = 0f;
     private Vector3 _input;
@@ -75,17 +78,24 @@ public class PlayerMvt : MonoBehaviour
 
     private void Dash()
     {
-        Vector3 dashStartPosition = transform.position;
-        Vector3 dashDestination = dashStartPosition + transform.forward * dashDistance;
+        trailRenderer.enabled = true;
+        // Direction and force for the dash
+        Vector3 dashDirection = transform.forward;
+        Vector3 dashForce = dashDirection * dashDistance / dashDuration; // Adjusting the force to cover the desired distance over the given time
 
-        // Check for obstacles to avoid dashing into them
-        RaycastHit hit;
-        if (Physics.Raycast(dashStartPosition, transform.forward, out hit, dashDistance))
-        {
-            dashDestination = hit.point - transform.forward * 0.5f; // Adjust for obstacle
-        }
+        // Apply a force in the dash direction
+        _rb.AddForce(dashForce, ForceMode.VelocityChange); // Use VelocityChange for immediate velocity change
 
-        // Perform the dash
-        transform.position = dashDestination;
+        // Start a coroutine to reset the dash after a certain duration
+        StartCoroutine(ResetDash());
+    }
+
+    private IEnumerator ResetDash()
+    {
+        yield return new WaitForSeconds(dashDuration);
+
+        // Reset velocity after dash duration to prevent continued movement
+        _rb.velocity = Vector3.zero; // Stop after dash
+        trailRenderer.enabled = false;
     }
 }

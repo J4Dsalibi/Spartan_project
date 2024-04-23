@@ -4,21 +4,27 @@ using UnityEngine;
 
 public class RoomGenerator
 {
+    private int maxIterations;
+    private int roomLengthMin;
+    private int roomWidthMin;
+
     public RoomGenerator(int maxIterations, int roomLengthMin, int roomWidthMin)
     {
+        this.maxIterations = maxIterations;
+        this.roomLengthMin = roomLengthMin;
+        this.roomWidthMin = roomWidthMin;
     }
 
-    public List<RoomNode> GenerateRoomsInGivenSpaces(List<Node> roomSpaces)
+    public List<RoomNode> GenerateRoomsInGivenSpaces(List<Node> roomSpaces, float roomBottomCornerModifier, float roomTopCornerMidifier, int roomOffset)
     {
         List<RoomNode> listToReturn = new List<RoomNode>();
         foreach (var space in roomSpaces)
         {
             Vector2Int newBottomLeftPoint = StructureHelper.GenerateBottomLeftCornerBetween(
-                space.BottomLeftAreaCorner, space.TopRightAreaCorner, 0.1f, 1);
+                space.BottomLeftAreaCorner, space.TopRightAreaCorner, roomBottomCornerModifier, roomOffset);
 
-            Vector2Int newTopRightPoint = StructureHelper.GenerateBottomLeftCornerBetween(
-                space.BottomLeftAreaCorner, space.TopRightAreaCorner, 0.9f, 1);
-
+            Vector2Int newTopRightPoint = StructureHelper.GenerateTopRightCornerBetween(
+                space.BottomLeftAreaCorner, space.TopRightAreaCorner, roomTopCornerMidifier, roomOffset);
             space.BottomLeftAreaCorner = newBottomLeftPoint;
             space.TopRightAreaCorner = newTopRightPoint;
             space.BottomRightAreaCorner = new Vector2Int(newTopRightPoint.x, newBottomLeftPoint.y);

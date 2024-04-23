@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-
 public class Line
 {
     Orientation orientation;
@@ -7,7 +6,7 @@ public class Line
 
     public Line(Orientation orientation, Vector2Int coordinates)
     {
-        this.Orientation = orientation;
+        this.orientation = orientation;
         this.coordinates = coordinates;
     }
 
